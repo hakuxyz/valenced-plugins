@@ -19,7 +19,7 @@ export default function SettingsComponent({
 		<ScrollView keyboardShouldPersistTaps="handled">
 			<Page>
 				<Text variant="text-md/normal" style={{ marginBottom: 12 }}>
-					Add notes to servers so you remember why you joined — or why you left.
+					Add notes to servers so you remember why you joined - or why you left.
 				</Text>
 				<TableRowGroup title="Server Notes">
 					{Object.entries(settings.notes ?? {}).map(([guildId, note]) => (

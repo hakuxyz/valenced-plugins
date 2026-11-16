@@ -24,16 +24,16 @@ Profile theming with colors hidden in your bio using invisible 3y3 text. A port 
 - **Nitro friendly**
 -# Optional setting to keep your real Nitro colors if a profile has both.
 
--# **Note:** The color picker can sometimes fail to open in the plugin settings. If that happens, open your profile editor once — the picker loads with it — then try again in the plugin settings. This usually only needs to be done once per app launch.
+-# **Note:** The color picker can sometimes fail to open in the plugin settings. If that happens, open your profile editor once - the picker loads with it - then try again in the plugin settings. This usually only needs to be done once per app launch.
 
 The plugin is CC0. The original authors are credited in the manifest, LICENSE and NOTICE files.
 
 ## Server Notes
-Put notes on servers so you remember why you joined — or why you left. Comes with a color-coded tag in your server list.
+Put notes on servers so you remember why you joined - or why you left. Comes with a color-coded tag in your server list.
 
-- **Server note** — add or change a note for any server from its settings
-- **Color tag** — pick a tag color from the same menu; shown right on the server icon
-- **Persisted** — notes survive restarts and are stored locally per server
-- **Free** — CC0, no paid features
+- **Server note** - add or change a note for any server from its settings
+- **Color tag** - pick a tag color from the same menu; shown right on the server icon
+- **Persisted** - notes survive restarts and are stored locally per server
+- **Free** - CC0, no paid features
 
 The plugin is CC0.

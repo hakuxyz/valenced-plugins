@@ -2,9 +2,9 @@
 	"format": 1,
 	"id": "hakuxyz.server-notes",
 	"name": "Server Notes",
-	"description": "Put notes and colored tags on servers so you remember why you joined — or why you left.",
-	"author": "hakuxyz <beamzbyhakz@proton.me>",
-	"version": "1.0.0",
+	"description": "Put notes and colored tags on servers so you remember why you joined - or why you left.",
+	"author": "hakuxyz",
+	"version": "1.0.1",
 	"icon": "PencilIcon",
 	"dependencies": {
 		"valenced.api": {
