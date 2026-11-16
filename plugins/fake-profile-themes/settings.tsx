@@ -71,11 +71,7 @@ export default function SettingsComponent({
 	return (
 		<ScrollView keyboardShouldPersistTaps="handled">
 			<Page>
-				<Text
-					variant="text-md/normal"
-					color="#b5bac1"
-					style={{ marginBottom: 12 }}
-				>
+				<Text variant="text-md/normal" style={{ marginBottom: 12 }}>
 					Pick your colors, copy the hidden text, then paste it anywhere in your
 					bio. Other people with this plugin will see the colors on your
 					profile.
