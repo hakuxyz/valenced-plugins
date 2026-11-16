@@ -21,7 +21,7 @@ Open the Valenced settings, go to Plugins, add the repository and install whatev
 
 ## Colors in your bio
 
-Fake Profile Themes uses the same legacy 3y3 format as Vencord, Vendetta and Revenge, so bios written with any of those plugins keep working. Pick two colors in the plugin settings, press Copy 3y3 and paste the invisible text anywhere in your bio.
+Fake Profile Themes uses the same legacy 3y3 format as Vencord, Vendetta and Revenge, so bios written with any of those plugins keep working. Open your profile editor, pick a primary and accent color in the Fake Profile Themes section, press Copy 3y3 and paste the invisible text anywhere in your bio. The plugin settings also accept plain hex values.
 
 ## Credits
 
