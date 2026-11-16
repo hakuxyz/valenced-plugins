@@ -17,7 +17,8 @@ Open the Valenced settings, go to Plugins, add the repository and install whatev
 | Plugin | Description | Credit |
 | --- | --- | --- |
 | [Fake Profile Themes](plugins/fake-profile-themes) | Show profile colors hidden in bios with invisible 3y3 encoding. | ryan, Alyxia Sother, Remty |
-| [Silent Edit](plugins/silent-edit) | Edit your messages without showing the edited indicator. | coder.gg |
+
+More plugins are coming soon.
 
 ## Colors in your bio
 
