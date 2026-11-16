@@ -10,13 +10,14 @@ import { join } from 'node:path'
 import { zipSync } from 'fflate'
 
 const PagesDir = 'build/pages'
+const FixedMtime = new Date('2000-01-01T00:00:00Z')
 
 rmSync(PagesDir, { recursive: true, force: true })
 mkdirSync(PagesDir, { recursive: true })
 
 let count = 0
 
-for (const name of readdirSync('plugins')) {
+for (const name of [...readdirSync('plugins')].sort()) {
 	const pluginDir = join('plugins', name)
 	const manifestPath = join(pluginDir, 'manifest.json')
 	if (!existsSync(manifestPath)) continue
@@ -30,10 +31,13 @@ for (const name of readdirSync('plugins')) {
 		throw new Error(`Missing ${bundlePath}. Run "bun run build" first.`)
 	}
 
-	const archive = zipSync({
-		'manifest.json': new Uint8Array(readFileSync(manifestPath)),
-		'index.js': new Uint8Array(readFileSync(bundlePath)),
-	})
+	const archive = zipSync(
+		{
+			'manifest.json': new Uint8Array(readFileSync(manifestPath)),
+			'index.js': new Uint8Array(readFileSync(bundlePath)),
+		},
+		{ mtime: FixedMtime },
+	)
 	const fileName = `${manifest.id}@${manifest.version}.zip`
 
 	writeFileSync(join(PagesDir, fileName), archive)
