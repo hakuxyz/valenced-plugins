@@ -29,11 +29,11 @@ Profile theming with colors hidden in your bio using invisible 3y3 text. A port 
 The plugin is CC0. The original authors are credited in the manifest, LICENSE and NOTICE files.
 
 ## Server Notes
-Put notes on servers so you remember why you joined - or why you left. Comes with a color-coded tag in your server list.
+Add notes and custom color tags to servers to keep track of them.
 
-- **Server note** - add or change a note for any server from its settings
-- **Color tag** - pick a tag color from the same menu; shown right on the server icon
-- **Persisted** - notes survive restarts and are stored locally per server
-- **Free** - CC0, no paid features
+- **Notes per server** - add, edit, or remove a note for any server
+- **Color tags** - choose from preset colors or pick any custom color
+- **Easy to access** - manage notes from plugin settings and, when available, from the server menu
+- **Local storage** - notes and tags are stored locally on this device
 
 The plugin is CC0.
