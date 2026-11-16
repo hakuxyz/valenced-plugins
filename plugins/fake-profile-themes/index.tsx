@@ -1,9 +1,12 @@
-import { getStore, Stores } from '@valenced/discord/flux'
-import { after } from '@valenced/patcher'
-import { setupBuilder, setupColorPicker } from './builder'
+import { getStore } from '@valenced/discord/flux'
+import { instead } from '@valenced/patcher'
+import { setupColorPicker } from './color-picker'
+import { currentColors, currentUserId } from './colors'
 import SettingsComponent from './settings'
-import { DefaultSettings, decodeColors, hexToNumber } from './shared'
-import { setStorage } from './state'
+import { DefaultSettings, decodeColors } from './shared'
+import { currentSettings, setStorage } from './state'
+import { setupThemePreview } from './theme-preview'
+import type { AnyFunction } from '@valenced/utils/types'
 import type { Settings } from './shared'
 
 interface UserProfile {
@@ -19,17 +22,40 @@ interface UserProfileStore {
 	getUserProfile(userId: string): UserProfile | undefined
 }
 
-interface UserStore {
-	getCurrentUser(): { id: string } | undefined
+type Instead = (args: unknown[], original: AnyFunction) => unknown
+
+const insteadLoose = instead as unknown as (
+	parent: Record<string, AnyFunction>,
+	key: string,
+	hook: Instead,
+) => () => boolean
+
+/**
+ * The patched profile object is mutated in place, so after the first patch
+ * profile.themeColors is no longer a reliable sign that the user has real
+ * Nitro colors. Remember the original value per profile object instead.
+ */
+const originalThemeColors = new WeakMap<object, number[] | null>()
+
+function getOriginalThemeColors(profile: UserProfile): number[] | null {
+	const cached = originalThemeColors.get(profile)
+	if (cached !== undefined) return cached
+
+	const original = profile.themeColors ?? null
+	originalThemeColors.set(profile, original)
+	return original
 }
 
-function colorsFromSettings(
-	settings: Partial<Settings>,
-): [number, number] | null {
-	const primary = hexToNumber(settings.primary ?? DefaultSettings.primary)
-	const accent = hexToNumber(settings.accent ?? DefaultSettings.accent)
+function isCurrentUser(
+	requestedId: unknown,
+	profile: UserProfile | undefined,
+): boolean {
+	const ownId = currentUserId()
+	if (ownId == null) return false
 
-	return primary == null || accent == null ? null : [primary, accent]
+	return (
+		requestedId === ownId || profile?.userId === ownId || profile?.id === ownId
+	)
 }
 
 export default plugin<{ jsonStorage: Settings }>({
@@ -40,45 +66,48 @@ export default plugin<{ jsonStorage: Settings }>({
 	start({ cleanup, jsonStorage }) {
 		setStorage(jsonStorage)
 		setupColorPicker(cleanup)
-		setupBuilder(cleanup)
+		setupThemePreview(cleanup)
 
 		cleanup(
 			getStore<UserProfileStore>('UserProfileStore', store => {
 				cleanup(
-					after(store, 'getUserProfile', (profile: UserProfile | undefined) => {
-						if (!profile || profile.profileFetchFailed) return profile
+					insteadLoose(
+						store as unknown as Record<string, AnyFunction>,
+						'getUserProfile',
+						(args, original) => {
+							const profile = original(...args) as UserProfile | undefined
+							if (!profile || profile.profileFetchFailed) return profile
 
-						try {
-							const settings = { ...DefaultSettings, ...jsonStorage.cache }
-							if (settings.nitroFirst && profile.themeColors != null) {
-								return profile
-							}
+							try {
+								const settings = currentSettings()
 
-							const userStore = Stores.UserStore as unknown as
-								| UserStore
-								| undefined
-							const currentId = userStore?.getCurrentUser?.()?.id
-							if (
-								currentId &&
-								(profile.userId === currentId || profile.id === currentId)
-							) {
-								const colors = colorsFromSettings(settings)
-								if (colors) {
-									profile.themeColors = colors
-									profile.premiumType = 2
+								// Always show the colors picked in the plugin on your
+								// own profile, even if the cached profile already has
+								// theme colors from an earlier patch.
+								if (isCurrentUser(args[0], profile)) {
+									const colors = currentColors()
+									if (colors) {
+										profile.themeColors = colors
+										profile.premiumType = 2
+										return profile
+									}
+								}
+
+								// Only keep real Nitro colors of other profiles.
+								if (settings.nitroFirst && getOriginalThemeColors(profile)) {
 									return profile
 								}
-							}
 
-							const colors = decodeColors(profile.bio)
-							if (!colors) return profile
+								const colors = decodeColors(profile.bio)
+								if (!colors) return profile
 
-							profile.themeColors = colors
-							profile.premiumType = 2
-						} catch {}
+								profile.themeColors = colors
+								profile.premiumType = 2
+							} catch {}
 
-						return profile
-					}),
+							return profile
+						},
+					),
 				)
 			}),
 		)

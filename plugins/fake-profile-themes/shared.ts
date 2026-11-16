@@ -23,6 +23,24 @@ export function hexToNumber(value: string): number | null {
 	return hex ? Number.parseInt(hex.slice(1), 16) : null
 }
 
+/**
+ * Discord's color picker returns a number, but some builds hand back a hex
+ * string or an object with a color property. Accept all of them.
+ */
+export function colorValueToNumber(value: unknown): number | null {
+	if (typeof value === 'number' && Number.isFinite(value)) {
+		return Math.trunc(value) & 0xffffff
+	}
+
+	if (typeof value === 'string') return hexToNumber(value)
+
+	if (typeof value === 'object' && value !== null && 'color' in value) {
+		return colorValueToNumber((value as { color?: unknown }).color)
+	}
+
+	return null
+}
+
 export function encodeColors(primary: number, accent: number): string {
 	const message = `[#${primary.toString(16).padStart(6, '0')},#${accent.toString(16).padStart(6, '0')}]`
 	const encoded = Array.from(message)
@@ -32,7 +50,7 @@ export function encodeColors(primary: number, accent: number): string {
 	return ` ${encoded}`
 }
 
-const DecodeRegex = /\[#([a-fA-F0-9]{1,6}),#([a-fA-F0-9]{1,6})\]/
+const DecodeRegex = /\[#([a-fA-F0-9]{1,6}),#([a-fA-F0-9]{1,6})\]/g
 
 export function decodeColors(
 	bio: string | null | undefined,
@@ -47,7 +65,11 @@ export function decodeColors(
 		}
 	}
 
-	const match = ascii.match(DecodeRegex)
+	// Bios can contain several hidden codes, for example after updating the
+	// colors without removing the previous one. The newest code is normally
+	// the one closest to the end, so prefer the last match.
+	const matches = [...ascii.matchAll(DecodeRegex)]
+	const match = matches[matches.length - 1]
 	if (!match) return null
 
 	return [Number.parseInt(match[1], 16), Number.parseInt(match[2], 16)]
