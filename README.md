@@ -99,6 +99,20 @@ Add notes and custom color tags to servers to keep track of them.
 
 The plugin is CC0.
 
+### Shut Up Clyde
+
+**Version:** 1.0.0
+
+Block Clyde error messages and remove common Nitro upsell prompts and popups. Inspired by the Aliucord plugin of the same name.
+
+- **Clyde errors.** Prevent local Clyde error messages from appearing in chat.
+- **Clyde bot messages.** Optionally filter messages posted by the Clyde bot.
+- **Gift button.** Remove the Nitro gift shortcut from the chat composer.
+- **Nitro upsells.** Hide known Nitro cards, banners and purchase prompts where Discord exposes them.
+- **Local settings.** Every switch is controlled from the plugin settings.
+
+Some prompts depend on the Discord version. Reload the affected screen if a prompt stays visible.
+
 ## Bugs and Ideas
 
 Found a bug? Let me know, or report it on GitHub. Have an idea for a new plugin or something you would love to see ported? Feel free to reach out and share your suggestion.
