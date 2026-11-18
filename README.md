@@ -65,6 +65,17 @@ Rewrite social media links to embed-friendly domains before a message is sent or
 
 **Default domains:** `fxtwitter.com`, `fixupx.com`, `tnktok.com`, `fxbsky.app`, `ddinstagram.com`, `redditez.com`, `fixthreads.net` and `phixiv.net`. Threads and Pixiv are off by default.
 
+### Messagebox Typing History
+
+**Version:** 1.0.0
+
+Undo and redo the text you typed in the message box, with buttons and gestures.
+
+- **Undo and redo buttons.** A small pill above the message box lets you step back and forward through your typed text.
+- **Gestures.** Two-finger tap to undo, with hold or double-tap to redo.
+- **Per-channel history.** Your typing history is kept separately for each channel.
+- **Customizable.** Configure button size, visibility and gesture behavior in the plugin settings.
+
 ### Oneko
 
 **Version:** 1.0.0
