@@ -16,6 +16,19 @@ Then open the repository in Valenced and install the plugins you want.
 
 ## Plugins
 
+### Compact Mode
+
+**Version:** 1.0.3
+
+Remove the large message header and show the username inline with the message content. A port of the Vendetta compact mode layout.
+
+- **Inline header.** Usernames, timestamps, avatars and role tags sit with the message text.
+- **Flexible layout.** Put the username on its own line above the message if you prefer.
+- **Reply cleanup.** Remove avatars from the replied-to message previews.
+- **Local settings.** Every option is controlled from the plugin settings.
+
+The inline name is plain text, so tapping it does not open a profile. Changes apply to newly rendered messages. Reload the channel if old messages keep their previous layout.
+
 ### Fake Profile Themes
 
 **Version:** 1.2.1
