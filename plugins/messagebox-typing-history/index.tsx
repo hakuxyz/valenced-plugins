@@ -11,9 +11,12 @@ import { DefaultSettings } from './shared'
 import {
 	channelFor,
 	currentSettings,
+	debugHistory,
+	readDraft,
 	record,
 	seed,
 	setApplier,
+	setReporter,
 	setSettingsGetter,
 	settingsChanged,
 	store,
@@ -68,6 +71,8 @@ let latestInputProps: any
  * history is applied instead of during whichever render happened to see it.
  */
 let refHolderRef: any
+/** Callback ref seen for the chat input, captured when invoked. */
+let callbackRefSeen = false
 /** Modules that can write text to the chat input. */
 const chatModules = new Set<any>()
 /** Module that owns `handleTextChanged`, observed and used as a writer. */
@@ -564,6 +569,83 @@ function applyText(text: string) {
 	}
 }
 
+function diagnose(
+	action: string,
+	channelId: string,
+	ok: boolean,
+	expected?: string,
+) {
+	const clip = (value: unknown, max = 10) => {
+		try {
+			const text = value === undefined || value === null ? '-' : String(value)
+			return text.length > max ? `${text.slice(0, max)}…` : text
+		} catch {
+			return '-'
+		}
+	}
+
+	try {
+		setTimeout(() => {
+			try {
+				const counts = debugHistory(channelId)
+				const el = latestInputs[0]
+				const props = el?.props ?? el
+				const instance = resolveInstance()
+				const draft = readDraft(channelId)
+				const value =
+					typeof props?.value === 'string'
+						? props.value
+						: props?.defaultValue != null
+							? `d:${props.defaultValue}`
+							: instance?.state?.text != null
+								? `s:${instance.state.text}`
+								: '-'
+				const nativeCandidates = [
+					refTarget(props?.ref ?? el?.ref),
+					refTarget(instance?._inputRef),
+					refTarget(instance?.inputRef),
+					refTarget(instance?._textInput),
+					refTarget(instance?.textInputRef),
+					refTarget(instance?.input),
+					refTarget(instance?.props?.inputRef),
+					refTarget(instance?.props?.textInputRef),
+					refTarget(refHolderRef),
+				]
+				const hasNative = nativeCandidates.some(
+					native =>
+						native &&
+						(typeof native.clear === 'function' ||
+							typeof native.getNativeRef === 'function' ||
+							typeof native.setNativeProps === 'function'),
+				)
+				const flags = [
+					latestInputs.length > 0 ? 'p1' : 'p0',
+					instance && typeof instance.handleTextChanged === 'function'
+						? 'i1'
+						: 'i0',
+					chatHandler ? 'h1' : 'h0',
+					chatModules.size > 0 ? 'm1' : 'm0',
+					insertModules.size > 0 ? 's1' : 's0',
+					setterModules.size > 0 ? 't1' : 't0',
+					hasNative ? 'r1' : 'r0',
+					draftModules.size > 0 ? 'g1' : 'g0',
+					callbackRefSeen ? 'c1' : 'c0',
+					getDispatchFn() ? 'x1' : 'x0',
+					fluxDispatcher ? 'f1' : 'f0',
+				].join('')
+				const want = expected === undefined ? '-' : clip(expected)
+				void want
+				void flags
+				void counts
+				void value
+				void draft
+				void action
+				void ok
+			} catch {}
+		}, 450)
+	} catch {}
+}
+
 function decorate(result: any, allowInject: boolean): any {
 	injected = false
 	try {
@@ -633,6 +715,7 @@ function decorate(result: any, allowInject: boolean): any {
 				break
 			}
 			if (typeof ref === 'function' && !(ref as any)[WRAPPED]) {
+				callbackRefSeen = true
 				const original = ref as AnyFunction
 				const wrapper = function (this: any, value: any) {
 					try {
@@ -836,6 +919,7 @@ function bootstrap(cleanup: Cleanup, storage: any) {
 	}
 	setGestureChannelGetter(() => latestChannel || channelFor())
 	setApplier(applyText)
+	setReporter(diagnose)
 
 	cleanup(
 		getModules(

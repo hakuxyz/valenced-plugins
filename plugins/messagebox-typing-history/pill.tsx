@@ -6,7 +6,9 @@ import {
 	canUndo,
 	channelFor,
 	currentSettings,
+	lastApplied,
 	redo,
+	report,
 	subscribe,
 	undo,
 } from './state'
@@ -96,6 +98,8 @@ function Button({
 }: {
 	label: string
 	accessibilityLabel: string
+	/** Whether there is history to act on. The button stays pressable so a
+	 * tap always reports what happened. */
 	available: boolean
 	onPress: () => void
 	metrics: Metrics
@@ -104,7 +108,6 @@ function Button({
 		<Pressable
 			accessibilityRole="button"
 			accessibilityLabel={accessibilityLabel}
-			disabled={!available}
 			onPress={onPress}
 			style={({ pressed }) => [
 				styles.button,
@@ -155,8 +158,8 @@ export default function TypingHistoryPill({ channelId }: Props) {
 
 	const run = (action: 'undo' | 'redo') => {
 		const channel = channelFor(channelId)
-		if (action === 'undo') undo(channel)
-		else redo(channel)
+		const ok = action === 'undo' ? undo(channel) : redo(channel)
+		report(action, channel, ok, ok ? lastApplied() : undefined)
 	}
 
 	return (
