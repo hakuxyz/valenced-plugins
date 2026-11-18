@@ -39,6 +39,19 @@ Shows the owner crown next to usernames, even in large servers where Discord nor
 
 The plugin is CC0.
 
+### FixLinks
+
+**Version:** 1.0.0
+
+Rewrite social media links to embed-friendly domains before a message is sent or edited.
+
+- **Eight platforms.** Twitter, X, TikTok, Bluesky, Instagram, Reddit, Threads and Pixiv.
+- **Per-platform switches.** Turn every platform on or off independently.
+- **Custom replacement links.** Point a platform at your own domain or instance URL.
+- **Safe rewriting.** Already fixed links are left alone, and a master switch disables the plugin at any time.
+
+**Default domains:** `fxtwitter.com`, `fixupx.com`, `tnktok.com`, `fxbsky.app`, `ddinstagram.com`, `redditez.com`, `fixthreads.net` and `phixiv.net`. Threads and Pixiv are off by default.
+
 ### Oneko
 
 **Version:** 1.0.0
