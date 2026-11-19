@@ -18,7 +18,7 @@ Then open the repository in Valenced and install the plugins you want.
 
 ### Compact Mode
 
-**Version:** 1.0.3
+**Version:** 1.0.4
 
 Remove the large message header and show the username inline with the message content. A port of the Vendetta compact mode layout.
 
@@ -46,7 +46,7 @@ The plugin is CC0. The original authors are credited in the manifest, LICENSE an
 
 ### Force Owner Crown
 
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 Shows the owner crown next to usernames, even in large servers where Discord normally hides it. A port of Vencord's ForceOwnerCrown, with the crown drawn locally.
 
@@ -54,7 +54,7 @@ The plugin is CC0.
 
 ### FixLinks
 
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 Rewrite social media links to embed-friendly domains before a message is sent or edited.
 
@@ -78,7 +78,7 @@ Undo and redo the text you typed in the message box, with buttons and gestures.
 
 ### Oneko
 
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 A little cat that chases your touches around the app, inspired by the classic Oneko plugin.
 
@@ -101,7 +101,7 @@ The plugin is CC0.
 
 ### Shut Up Clyde
 
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 Block Clyde error messages and remove common Nitro upsell prompts and popups. Inspired by the Aliucord plugin of the same name.
 
