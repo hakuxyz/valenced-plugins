@@ -54,7 +54,7 @@ The plugin is CC0.
 
 ### FixLinks
 
-**Version:** 1.0.1
+**Version:** 1.0.2
 
 Rewrite social media links to embed-friendly domains before a message is sent or edited.
 
