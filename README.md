@@ -67,7 +67,7 @@ Rewrite social media links to embed-friendly domains before a message is sent or
 
 ### Local OG Nitro Icon
 
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 Locally show the original Nitro badge icon instead of the evolved badge.
 
