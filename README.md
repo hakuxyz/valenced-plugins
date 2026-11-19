@@ -67,12 +67,13 @@ Rewrite social media links to embed-friendly domains before a message is sent or
 
 ### Local OG Nitro Icon
 
-**Version:** 1.0.1
+**Version:** 1.0.2
 
-Locally show the original Nitro badge icon instead of the evolved badge.
+Locally show the original Nitro badge icon and adjust Nitro Premium badge behavior.
 
 - **Nitro Basic and Nitro Premium.** Choose whether the plugin applies to Nitro Basic, Nitro Premium or both.
-- **Nitro Premium behavior.** Force the original starter Nitro icon, or remove the evolved badge after the starter period.
+- **Nitro Premium behavior.** Force the original starter Nitro icon, or replace only the starter badge and keep other evolved badges.
+- **Affect Your badges.** Optionally apply the selected Nitro Premium behavior to your own badges (Your badges area).
 - **Local only.** Changes depend on the badge and profile data Discord provides to the client.
 
 ### Messagebox Typing History

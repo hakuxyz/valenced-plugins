@@ -4,12 +4,14 @@ export interface Settings {
 	applyNitroBasic: boolean
 	applyNitroPremium: boolean
 	premiumMode: PremiumMode
+	affectYourBadges: boolean
 }
 
 export const DefaultSettings: Settings = {
 	applyNitroBasic: true,
 	applyNitroPremium: true,
 	premiumMode: 'original',
+	affectYourBadges: true,
 }
 
 // Classic/original Nitro subscriber badge icon (before evolution).

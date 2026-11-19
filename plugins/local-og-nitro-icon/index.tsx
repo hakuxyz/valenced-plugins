@@ -1,4 +1,4 @@
-import { getStore } from '@valenced/discord/flux'
+import { getStore, Stores } from '@valenced/discord/flux'
 import { instead } from '@valenced/patcher'
 import SettingsComponent from './settings'
 import {
@@ -54,7 +54,14 @@ function currentSettings(storage: any): Settings {
 			(typeof storage?.get === 'function' ? storage.get() : undefined) ??
 			storage?.data ??
 			{}
-		return { ...DefaultSettings, ...cached }
+		return {
+			...DefaultSettings,
+			...cached,
+			affectYourBadges:
+				cached?.affectYourBadges ??
+				cached?.affectYourBanners ??
+				DefaultSettings.affectYourBadges,
+		}
 	} catch {
 		return DefaultSettings
 	}
@@ -71,6 +78,20 @@ function cloneProfile(profile: UserProfileLike): UserProfileLike {
 function resolvePremiumType(profile: UserProfileLike): unknown {
 	if (profile?.premiumType != null) return profile.premiumType
 	return undefined
+}
+
+function currentUserId(): string | undefined {
+	try {
+		return (Stores as any)?.UserStore?.getCurrentUser?.()?.id
+	} catch {
+		return undefined
+	}
+}
+
+function isOwnProfile(profile: UserProfileLike): boolean {
+	const id = currentUserId()
+	if (!id) return false
+	return profile?.userId === id || profile?.id === id
 }
 
 function shouldAffectProfile(
@@ -135,9 +156,8 @@ function transformBadges(
 		}
 
 		if (settings.premiumMode === 'removeEvolved') {
-			// Only apply to evolved badges (1 month or longer): replace evolved
-			// badge with the original icon instead of removing it entirely.
-			if (!isStarterPeriod(premiumSince)) {
+			// Only replace the starter badge and keep other evolved badges.
+			if (isStarterPeriod(premiumSince)) {
 				changed = true
 				out.push({ ...badge, icon: OG_NITRO_ICON })
 			} else {
@@ -154,6 +174,14 @@ function transformBadges(
 	return changed ? out : badges
 }
 
+function nudgePremiumSinceToRecent(profile: UserProfileLike) {
+	try {
+		const recent = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+		if (profile.premiumSince) profile.premiumSince = recent
+		if (profile.premiumGuildSince) profile.premiumGuildSince = recent
+	} catch {}
+}
+
 function transformProfile(
 	profile: UserProfileLike | null | undefined,
 	storage: any,
@@ -167,35 +195,64 @@ function transformProfile(
 		const target = shouldAffectProfile(profile, settings)
 		if (!target) return profile
 
+		const ownProfile = isOwnProfile(profile)
+		const affectOwnBadges = !ownProfile || settings.affectYourBadges
+
 		const premiumSince = profile.premiumSince ?? profile.premiumGuildSince
-		const nextBadges = transformBadges(
-			profile.badges,
-			target.kind,
-			settings,
-			premiumSince,
-		)
+		const nextBadges = affectOwnBadges
+			? transformBadges(profile.badges, target.kind, settings, premiumSince)
+			: profile.badges
 
-		if (nextBadges === profile.badges) return profile
+		const next = nextBadges === profile.badges ? profile : cloneProfile(profile)
+		let changed = nextBadges !== profile.badges
 
-		const next = cloneProfile(profile)
-		next.badges = nextBadges
-
-		// If an evolved premium badge was normalized to the original icon, nudge
-		// premiumSince back locally so tenure-based badge rendering (if any)
-		// does not reintroduce an evolved badge in some clients.
-		if (
-			target.kind === 'premium' &&
-			settings.premiumMode === 'removeEvolved' &&
-			!isStarterPeriod(premiumSince)
-		) {
-			try {
-				const recent = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-				if (next.premiumSince) next.premiumSince = recent
-				if (next.premiumGuildSince) next.premiumGuildSince = recent
-			} catch {}
+		if (nextBadges !== profile.badges) {
+			;(next as UserProfileLike).badges = nextBadges
 		}
 
-		return next
+		// When enabled, nudge tenure back locally so areas that derive
+		// Nitro evolution from premium tenure (such as Your badges) can show
+		// the original/starter state for forced-original behavior.
+		if (affectOwnBadges && target.kind === 'premium') {
+			if (settings.premiumMode === 'original') {
+				const beforeSince = (next as UserProfileLike).premiumSince
+				const beforeGuildSince = (next as UserProfileLike).premiumGuildSince
+				nudgePremiumSinceToRecent(next as UserProfileLike)
+				if (
+					beforeSince !== (next as UserProfileLike).premiumSince ||
+					beforeGuildSince !== (next as UserProfileLike).premiumGuildSince
+				) {
+					changed = true
+					if (next === profile) {
+						const cloned = cloneProfile(profile)
+						cloned.badges = nextBadges
+						nudgePremiumSinceToRecent(cloned)
+						return cloned
+					}
+				}
+			} else if (
+				settings.premiumMode === 'removeEvolved' &&
+				isStarterPeriod(premiumSince)
+			) {
+				const beforeSince = (next as UserProfileLike).premiumSince
+				const beforeGuildSince = (next as UserProfileLike).premiumGuildSince
+				nudgePremiumSinceToRecent(next as UserProfileLike)
+				if (
+					beforeSince !== (next as UserProfileLike).premiumSince ||
+					beforeGuildSince !== (next as UserProfileLike).premiumGuildSince
+				) {
+					changed = true
+					if (next === profile) {
+						const cloned = cloneProfile(profile)
+						cloned.badges = nextBadges
+						nudgePremiumSinceToRecent(cloned)
+						return cloned
+					}
+				}
+			}
+		}
+
+		return changed ? (next as UserProfileLike) : profile
 	} catch {
 		return profile
 	}
