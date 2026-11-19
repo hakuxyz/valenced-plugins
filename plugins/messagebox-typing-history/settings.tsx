@@ -58,6 +58,16 @@ export default function SettingsComponent({
 					<TableRadioRow label="Always" value="always" />
 					<TableRadioRow label="Only when available" value="whenAvailable" />
 				</TableRadioGroup>
+
+				<TableRadioGroup
+					title="Button position"
+					value={settings.position}
+					onChange={position => storage.set({ position })}
+				>
+					<TableRadioRow label="Right" value="right" />
+					<TableRadioRow label="Center" value="center" />
+					<TableRadioRow label="Left" value="left" />
+				</TableRadioGroup>
 			</Page>
 		</ScrollView>
 	)
