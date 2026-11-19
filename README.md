@@ -65,6 +65,16 @@ Rewrite social media links to embed-friendly domains before a message is sent or
 
 **Default domains:** `fxtwitter.com`, `fixupx.com`, `tnktok.com`, `fxbsky.app`, `ddinstagram.com`, `redditez.com`, `fixthreads.net` and `phixiv.net`. Threads and Pixiv are off by default.
 
+### Local OG Nitro Icon
+
+**Version:** 1.0.0
+
+Locally show the original Nitro badge icon instead of the evolved badge.
+
+- **Nitro Basic and Nitro Premium.** Choose whether the plugin applies to Nitro Basic, Nitro Premium or both.
+- **Nitro Premium behavior.** Force the original starter Nitro icon, or remove the evolved badge after the starter period.
+- **Local only.** Changes depend on the badge and profile data Discord provides to the client.
+
 ### Messagebox Typing History
 
 **Version:** 1.0.1
