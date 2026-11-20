@@ -54,7 +54,7 @@ The plugin is CC0.
 
 ### FixLinks
 
-**Version:** 1.0.2
+**Version:** 1.0.3
 
 Rewrite social media links to embed-friendly domains before a message is sent or edited.
 
@@ -86,6 +86,15 @@ Undo and redo the text you typed in the message box, with buttons and gestures.
 - **Gestures.** Two-finger tap to undo, with hold or double-tap to redo.
 - **Per-channel history.** Your typing history is kept separately for each channel.
 - **Customizable.** Configure button position, size, visibility and gesture behavior in the plugin settings.
+
+### No Top Emojis
+
+**Version:** 1.0.0
+
+Hide the Top Emojis in Server category so Favorites stays first in the emoji picker.
+
+- **Favorites first.** Removes the top emoji section from the picker.
+- **Clean list.** The header and its emoji rows are removed together, so no empty section is left behind.
 
 ### Oneko
 
