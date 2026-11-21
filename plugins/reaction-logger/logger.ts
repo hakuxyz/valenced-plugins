@@ -8,16 +8,16 @@ import type {
 	ReactionEmoji,
 } from './shared'
 
-/** All reactions seen per message, used to recover data before Discord removes it. */
+// Every reaction we've seen for a message, so we can restore it if Discord removes it.
 const known = new Map<string, Map<string, ReactionData>>()
 
-/** Deleted reactions we keep visible, per message. */
+// Deleted reactions we still want to show, grouped by message.
 const logs = new Map<string, Map<string, LoggedReaction>>()
 
-/** channelId for messages we have seen, used to force a row refresh. */
+// Channel IDs, so we can force Discord to rebuild a row when we need to.
 const channels = new Map<string, string>()
 
-/** Messages whose events we trigger, so we do not log our own refresh. */
+// Messages we're refreshing ourselves, to avoid logging our own updates.
 const bypassed = new Set<string>()
 
 export function getDeletedReactions(messageId: string): LoggedReaction[] {
@@ -25,7 +25,7 @@ export function getDeletedReactions(messageId: string): LoggedReaction[] {
 	return map ? [...map.values()] : []
 }
 
-/** Remember every reaction the row generator shows for a message. */
+// Hold on to whatever Discord hands us before it can vanish.
 export function recordMessage(
 	messageId: string,
 	channelId: string | undefined,
@@ -41,7 +41,7 @@ export function recordMessage(
 		const burst = reaction.burstCount ?? reaction.burst_count ?? 0
 		const key = `${messageId}:${emojiKey(reaction.emoji)}`
 
-		// Only positive counts are real. A zero count can be a bridge placeholder.
+		// A zero count is often just a placeholder, so only keep the real ones.
 		if (normal > 0)
 			seen.set(
 				reactionKey(messageId, reaction.emoji, ReactionType.Normal),
@@ -63,7 +63,7 @@ export function recordMessage(
 	}
 }
 
-/** Forget logs for reactions that came back. */
+// If a reaction came back, stop treating it as deleted.
 export function reconcile(messageId: string, reactions: ReactionData[]): void {
 	const map = logs.get(messageId)
 	if (!map?.size) return
@@ -101,8 +101,8 @@ function rerender(messageId: string): void {
 	const channelId = channels.get(messageId)
 	if (!channelId) return
 
-	// The store has not processed the removal while this Flux event dispatches.
-	// Defer so the regenerated row sees the reaction actually gone.
+	// The store hasn't removed the reaction yet during this dispatch,
+	// so wait a tick before forcing the row to rebuild.
 	Promise.resolve().then(() => {
 		if (bypassed.has(messageId)) return
 		bypassed.add(messageId)

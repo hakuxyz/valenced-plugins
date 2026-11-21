@@ -120,7 +120,7 @@ A little cat that chases your touches around the app, inspired by the classic On
 
 ### Reaction Logger
 
-**Version:** 1.0.2
+**Version:** 1.0.0
 
 Keep deleted reactions visible with a deep red outline, while normal reacting still works.
 

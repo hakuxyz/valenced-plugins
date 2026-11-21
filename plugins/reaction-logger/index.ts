@@ -11,7 +11,7 @@ export default plugin({
 		cleanup(
 			...interceptReactions(),
 			clearLogs,
-			// modules/messages/native/renderer/RowGenerator.tsx
+			// RowManager comes from modules/messages/native/renderer/RowGenerator.tsx
 			getModules(withName<RowManager>('RowManager'), ({ prototype }) => {
 				cleanup(
 					after(prototype, 'generate', row => {

@@ -3,7 +3,7 @@ import { getDeletedReactions, reconcile, recordMessage } from './logger'
 import { emojiKey, ReactionType, reactionKey } from './shared'
 import type { MessageRow, ReactionData } from './shared'
 
-/** Discord marks a regenerated row as changed before sending it to native. */
+// Discord uses this flag to tell native to rebuild the row.
 const UpdateChangeType = 2
 const DeepRed = processColor('#8B0000')
 
@@ -30,7 +30,7 @@ function styleDeleted(reaction: ReactionData): ReactionData {
 		isMeBurst: false,
 	}
 
-	// A burst pill is what triggers Nitro's "A better way to react" prompt.
+	// Burst reactions bring up Nitro's "better way to react" prompt, so drop them.
 	delete styled.burstCount
 	delete styled.burst_count
 	delete styled.themedBurstColors
