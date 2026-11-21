@@ -2,7 +2,7 @@
 	"format": 1,
 	"id": "hakuxyz.reaction-logger",
 	"name": "Reaction Logger",
-	"description": "Keep deleted reactions visible and highlight them in red.",
+	"description": "Keep deleted reactions visible.",
 	"author": "hakuxyz (https://github.com/hakuxyz \"GitHub\")",
 	"version": "1.0.0",
 	"icon": "ReactionIcon",
