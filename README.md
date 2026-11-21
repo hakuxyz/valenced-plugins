@@ -118,6 +118,19 @@ A little cat that chases your touches around the app, inspired by the classic On
 - **Selectable skins.** Choose from 27 cat skins, including the BSD cat, in the plugin settings.
 - **Customizable.** Change size, speed and sleep behavior in the plugin settings.
 
+### Reaction Logger
+
+**Version:** 1.0.2
+
+Keep deleted reactions visible with a deep red outline, while normal reacting still works.
+
+- **Deleted reactions stay.** When someone removes a reaction from a message, the pill remains in the row.
+- **Deep red outline.** The pill keeps Discord's clear background, but its border turns dark red.
+- **Normal tap behavior.** The restored pill is not a Nitro burst reaction, so tapping it reacts the usual way.
+- **Normal emoji.** Emoji and counts keep their usual colors.
+
+Discord colors a whole message's reaction row at once. If a message has a deleted reaction, all reaction pills in that message get the red outline.
+
 ### Server Notes
 
 **Version:** 1.2.0
