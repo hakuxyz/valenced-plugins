@@ -109,12 +109,13 @@ Hide the Top Emojis in Server category so Favorites stays first in the emoji pic
 
 ### Oneko
 
-**Version:** 1.0.1
+**Version:** 1.0.3
 
 A little cat that chases your touches around the app, inspired by the classic Oneko plugin.
 
 - **Follows your touches.** The cat runs to where you tap on screen.
 - **Idle animations.** Sleeps and scratches when idle.
+- **Selectable skins.** Choose from 27 cat skins, including the BSD cat, in the plugin settings.
 - **Customizable.** Change size, speed and sleep behavior in the plugin settings.
 
 ### Server Notes
