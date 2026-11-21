@@ -65,6 +65,17 @@ Rewrite social media links to embed-friendly domains before a message is sent or
 
 **Default domains:** `fxtwitter.com`, `fixupx.com`, `tnktok.com`, `fxbsky.app`, `ddinstagram.com`, `redditez.com`, `fixthreads.net` and `phixiv.net`. Threads and Pixiv are off by default.
 
+### Hide Blocked Members
+
+**Version:** 1.0.0
+
+Hide blocked or ignored users from server and group DM member lists, so it looks like you do not share the server or group with them.
+
+- **Blocked by default.** Hides users you have blocked.
+- **Optional ignored users.** Turn on Ignored users to hide both blocked and ignored users.
+- **Clean counts.** Member counts drop along with the hidden users.
+- **Local only.** Other people still see them normally.
+
 ### Local OG Nitro Icon
 
 **Version:** 1.0.2
