@@ -1,4 +1,5 @@
 import {
+	cpSync,
 	existsSync,
 	mkdirSync,
 	readdirSync,
@@ -10,6 +11,8 @@ import { join } from 'node:path'
 import { zipSync } from 'fflate'
 
 const PagesDir = 'build/pages'
+const PacksDir = join(PagesDir, 'packs')
+const ThemePacksDir = 'plugins/themes/packs'
 const FixedMtime = new Date('2000-01-01T00:00:00Z')
 
 rmSync(PagesDir, { recursive: true, force: true })
@@ -43,6 +46,12 @@ for (const name of [...readdirSync('plugins')].sort()) {
 	writeFileSync(join(PagesDir, fileName), archive)
 	count++
 	console.log(`Packed ${fileName}`)
+}
+
+// Emoji packs are prebuilt ZIPs and previews, downloaded only when selected.
+if (existsSync(ThemePacksDir)) {
+	cpSync(ThemePacksDir, PacksDir, { recursive: true })
+	console.log(`Copied packs from ${ThemePacksDir}`)
 }
 
 console.log(`Packed ${count} plugin(s) into ${PagesDir}`)
