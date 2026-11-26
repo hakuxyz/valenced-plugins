@@ -124,12 +124,13 @@ A little cat that chases your touches around the app, inspired by the classic On
 
 Keep deleted reactions visible with a deep red outline, while normal reacting still works.
 
-- **Deleted reactions stay.** When someone removes a reaction from a message, the pill remains in the row.
+- **Deleted reactions stay.** When someone removes a reaction from a message, a separate red pill appears next to the normal one, even if other people still have that reaction.
+- **Who removed it.** Hold the reaction to see the name of the person who removed it, alongside Discord's own reaction menu.
+- **Re-react to clear.** Adding the reaction again removes the logged entry.
 - **Deep red outline.** The pill keeps Discord's clear background, but its border turns dark red.
 - **Normal tap behavior.** The restored pill is not a Nitro burst reaction, so tapping it reacts the usual way.
-- **Normal emoji.** Emoji and counts keep their usual colors.
 
-Discord colors a whole message's reaction row at once. If a message has a deleted reaction, all reaction pills in that message get the red outline.
+Discord colors a whole message's reaction row at once. If a message has a deleted reaction, all reaction pills in that message get the red outline. Discord's reaction list stays empty for a removed user, so the name is shown in a separate popup.
 
 ### Server Notes
 
