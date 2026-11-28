@@ -3,6 +3,7 @@ import { AlertActionCreators } from '@valenced/discord/actions'
 import { Design } from '@valenced/discord/design'
 import { BundleUpdaterManager, FileModule } from '@valenced/discord/native'
 import { pluginStorageDirFor } from '@valenced/plugins/constants'
+import { lookupGeneratedIconComponent } from '@valenced/utils/discord'
 import { unzipSync } from 'fflate'
 import { useEffect, useState } from 'react'
 import { Image, ScrollView } from 'react-native'
@@ -17,16 +18,26 @@ type Props = ComponentProps<PluginSettingsComponent<{ jsonStorage: Settings }>>
 const PacksBaseUrl = 'https://hakuxyz.github.io/valenced-plugins/packs'
 const PacksMetaUrl = `${PacksBaseUrl}/meta.json`
 const ReloadAlertKey = 'ThemesReloadRequired'
+const UninstallAlertKey = 'ThemesUninstallConfirm'
 
 const {
 	AlertActionButton,
 	AlertModal,
 	Button,
+	ContextMenu,
 	Stack,
 	TableRow,
 	TableRowGroup,
 	Text,
 } = Design
+
+function lookupIcon(...names: [string, ...string[]]) {
+	try {
+		return lookupGeneratedIconComponent(...names)
+	} catch {
+		return undefined
+	}
+}
 
 function formatSize(bytes: number): string {
 	if (!bytes) return '...'
@@ -126,6 +137,37 @@ function openReloadRequired() {
 	)
 }
 
+function openUninstallConfirm(pack: Pack, onConfirm: () => void) {
+	AlertActionCreators.openAlert(
+		UninstallAlertKey,
+		<AlertModal
+			title={`Uninstall ${pack.name}?`}
+			content={
+				<Text variant="text-md/medium" color="text-default">
+					This deletes the downloaded emoji files from your phone.
+				</Text>
+			}
+			actions={
+				<>
+					<AlertActionButton
+						variant="destructive"
+						text="Uninstall"
+						onPress={() => {
+							AlertActionCreators.dismissAlert(UninstallAlertKey)
+							onConfirm()
+						}}
+					/>
+					<AlertActionButton
+						variant="secondary"
+						text="Cancel"
+						onPress={() => AlertActionCreators.dismissAlert(UninstallAlertKey)}
+					/>
+				</>
+			}
+		/>,
+	)
+}
+
 export default function SettingsComponent({ api }: Props) {
 	const { jsonStorage: storage, plugin } = api
 	// Decorated by the Themes API plugin; untyped because it is not in the SDK.
@@ -147,6 +189,11 @@ export default function SettingsComponent({ api }: Props) {
 	const settings = storage.use() ?? DefaultSettings
 	const selected = settings.selected
 	const downloaded = new Set(settings.downloaded ?? [])
+
+	const UseIcon = lookupIcon('CheckmarkIcon', 'CircleCheckIcon')
+	const DownloadIcon = lookupIcon('DownloadIcon', 'ArrowDownToLineIcon')
+	const ReloadIcon = lookupIcon('RetryIcon', 'RefreshIcon', 'SyncIcon')
+	const UninstallIcon = lookupIcon('TrashIcon', 'DeleteIcon')
 
 	useEffect(() => {
 		let cancelled = false
@@ -246,6 +293,30 @@ export default function SettingsComponent({ api }: Props) {
 		}
 	}
 
+	async function uninstallPack(pack: Pack) {
+		try {
+			const base = packDirOf(pack.id).slice(documentsDir.length + 1)
+			await FileModule.clearFolder('documents', base)
+			const nextDownloaded = (settings.downloaded ?? []).filter(
+				id => id !== pack.id,
+			)
+			const nextSelected = selected === pack.id ? null : selected
+			await storage.set({
+				...settings,
+				downloaded: nextDownloaded,
+				selected: nextSelected,
+			})
+			if (nextSelected === null) await writeEmojiSelection(null)
+			openReloadRequired()
+		} catch (e) {
+			setError(
+				`Failed to uninstall ${pack.name}: ${
+					e instanceof Error ? e.message : String(e)
+				}`,
+			)
+		}
+	}
+
 	const activeCategory = CATEGORIES.find(c => c.id === openCategory)
 	const inUse = CATEGORIES.flatMap(category =>
 		category.packs.map(pack => ({ pack, category })),
@@ -307,37 +378,86 @@ export default function SettingsComponent({ api }: Props) {
 										? ' - on this phone'
 										: ''
 								return (
-									<TableRow
+									<ContextMenu
 										key={pack.id}
-										label={pack.name}
-										subLabel={
-											<Stack spacing={6}>
-												<Text variant="text-sm/normal" color="text-muted">
-													{`${size}${status}`}
-												</Text>
-												<PreviewStrip packId={pack.id} />
-											</Stack>
-										}
-										trailing={
-											<Button
-												size="sm"
-												variant={active ? 'secondary' : 'primary'}
-												text={
-													active
-														? 'Selected'
-														: busy
-															? '...'
-															: done
-																? 'Use'
-																: 'Download'
+										title={pack.name}
+										triggerOnLongPress
+										items={[
+											done
+												? {
+														label: active ? 'Selected' : 'Use',
+														IconComponent: UseIcon,
+														action: () => {
+															if (!active) void selectDownloadedPack(pack)
+														},
+													}
+												: {
+														label: 'Download',
+														IconComponent: DownloadIcon,
+														action: () => void downloadPack(pack),
+													},
+											...(done
+												? [
+														{
+															label: 'Reload',
+															IconComponent: ReloadIcon,
+															action: () => void downloadPack(pack),
+														},
+													]
+												: []),
+											...(done
+												? [
+														{
+															label: 'Uninstall',
+															IconComponent: UninstallIcon,
+															variant: 'destructive' as const,
+															action: () =>
+																openUninstallConfirm(
+																	pack,
+																	() => void uninstallPack(pack),
+																),
+														},
+													]
+												: []),
+										]}
+									>
+										{props => (
+											<TableRow
+												{...(props as any)}
+												label={pack.name}
+												subLabel={
+													<Stack spacing={6}>
+														<Text variant="text-sm/normal" color="text-muted">
+															{`${size}${status}`}
+														</Text>
+														<PreviewStrip packId={pack.id} />
+													</Stack>
 												}
-												disabled={active || busy}
-												onPress={() =>
-													done ? selectDownloadedPack(pack) : downloadPack(pack)
+												trailing={
+													<Button
+														size="sm"
+														variant={active ? 'secondary' : 'primary'}
+														text={
+															active
+																? 'Selected'
+																: busy
+																	? '...'
+																	: done
+																		? 'Use'
+																		: 'Download'
+														}
+														disabled={active || busy}
+														onPress={() =>
+															done
+																? selectDownloadedPack(pack)
+																: downloadPack(pack)
+														}
+													/>
 												}
+												disabled={busy}
 											/>
-										}
-									/>
+										)}
+									</ContextMenu>
 								)
 							})}
 						</TableRowGroup>
